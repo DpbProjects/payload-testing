@@ -1,8 +1,20 @@
 import Image from 'next/image'
 
+import { Page } from 'payload-types'
+
 interface FeatureItem {
   title: string
-  description_html: any // Adjust the type depending on what Payload CMS returns for richText
+  description: {
+    root: {
+      type: string
+      children: Array<{ type: string; version: number; [k: string]: unknown }>
+      direction: 'ltr' | 'rtl' | null
+      format: '' | 'left' | 'start' | 'center' | 'right' | 'end' | 'justify'
+      indent: number
+      version: number
+    }
+  }
+  description_html?: string | null // Marking this as optional
   image: {
     url: string
     alt?: string
@@ -11,8 +23,18 @@ interface FeatureItem {
 
 interface FeaturesProps {
   title: string
-  description_html: any
-  featureItems: FeatureItem[]
+  description: {
+    root: {
+      type: string
+      children: Array<{ type: string; version: number; [k: string]: unknown }>
+      direction: 'ltr' | 'rtl' | null
+      format: '' | 'left' | 'start' | 'center' | 'right' | 'end' | 'justify'
+      indent: number
+      version: number
+    }
+  }
+  description_html?: string | null // Marking this as optional
+  featureItems?: FeatureItem[] // Make featureItems optional if it can be absent
 }
 
 const Features: React.FC<FeaturesProps> = ({ title, description_html, featureItems }) => {
@@ -33,28 +55,29 @@ const Features: React.FC<FeaturesProps> = ({ title, description_html, featureIte
 
         {/* Render featureItems */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {featureItems.map((feature, index) => {
-            return (
-              <div key={index} className="p-6 border rounded-lg shadow-md text-center">
-                <div className="relative w-full h-64">
-                  <Image
-                    src={feature.image.url}
-                    alt={feature.image.alt || 'Feature image'}
-                    fill
-                    className="object-cover"
-                  />
+          {featureItems &&
+            featureItems.map((feature, index) => {
+              return (
+                <div key={index} className="p-6 border rounded-lg shadow-md text-center">
+                  <div className="relative w-full h-64">
+                    <Image
+                      src={feature.image.url}
+                      alt={feature.image.alt || 'Feature image'}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                  {/* Render the rich text content for each feature item */}
+                  {feature.description_html && (
+                    <div
+                      className="text-gray-600"
+                      dangerouslySetInnerHTML={{ __html: feature.description_html }}
+                    />
+                  )}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                {/* Render the rich text content for each feature item */}
-                {feature.description_html && (
-                  <div
-                    className="text-gray-600"
-                    dangerouslySetInnerHTML={{ __html: feature.description_html }}
-                  />
-                )}
-              </div>
-            )
-          })}
+              )
+            })}
         </div>
       </div>
     </section>

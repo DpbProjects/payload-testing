@@ -1,5 +1,3 @@
-import { Fragment } from 'react'
-
 import type { Page } from 'payload-types'
 
 import Features from '../_blocks/features'
@@ -21,17 +19,17 @@ const Blocks = ({ blocks }: BlockProps) => {
 
   if (hasBlocks) {
     return (
-      <Fragment>
+      <>
         {blocks.map((block, index) => {
           const { blockType } = block
 
           if (blockType && blockType in blockComponents) {
             const Block = blockComponents[blockType]
-
+          // @ts-ignore
             return <Block key={index} {...block} />
           }
         })}
-      </Fragment>
+      </>
     )
   }
 
